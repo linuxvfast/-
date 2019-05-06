@@ -1,0 +1,20 @@
+import requests
+import os
+
+url = 'http://image.ngchina.com.cn/2019/0506/20190506112253635.jpg'
+dir = r'H:\Python36\source_code\crawler\requests_test'
+path = dir + '\\' + url.split('/')[-1]
+print(path)
+try:
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+    if not os.path.exists(path):
+        r = requests.get(url)
+        with open(path,'wb') as f:
+            f.write(r.content)
+            f.close()
+            print('图片下载成功')
+    else:
+        print('文件已经存在')
+except Exception as e:
+    print('错误:',e)
