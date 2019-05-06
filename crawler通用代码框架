@@ -1,0 +1,16 @@
+import requests
+
+
+def gethtmltext(url):
+    try:
+        r = requests.get(url,timeout=30)
+        r.raise_for_status() #检查状态是否是200，不是200报HTTPError错误
+        r.encoding = r.apparent_encoding  #将http头中获取的编码赋值给从http的header中猜测的编码（决定r.text的编码格式）
+        return r.text
+    except Exception as e:
+        return '异常信息:',e
+
+if __name__ == '__main__':
+    url = 'http://www.baidu.com'
+    print(gethtmltext(url))
+
