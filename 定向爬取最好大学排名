@@ -1,0 +1,36 @@
+#定向爬取最好大学排名
+import re
+import requests
+from bs4 import BeautifulSoup
+import bs4
+
+def get_html(url):
+    '''获取最好大学的html内容'''
+    try:
+        r = requests.get(url,timeout=30)
+        r.raise_for_status()
+        r.encoding = r.apparent_encoding
+        return r.text
+    except Exception as e:
+        return 'error:',e
+
+def find_school_list(html,ulist):
+    '''从HTML中提取排名,学校名,分数'''
+    soup = BeautifulSoup(html,'html.parser')
+    for tr in soup.tbody.children:
+       if isinstance(tr,bs4.element.Tag):
+            tds = tr('td')
+            ulist.append([tds[0].string,tds[1].string,tds[3].string])
+
+def print_school(ulist,num):
+    print('{:^10}\t{:^6}\t{:^10}'.format('排名','学校名称','总分'))
+    for i in range(num):
+        school_info = ulist[i]
+        print('{:^10}\t{:^6}\t{:^10}'.format(school_info[0],school_info[1],school_info[2]))
+
+if __name__ == '__main__':
+    ulist = []
+    url = 'http://www.zuihaodaxue.cn/zuihaodaxuepaiming2019.html'
+    html = get_html(url)
+    find_school_list(html,ulist)
+    print_school(ulist,20)
