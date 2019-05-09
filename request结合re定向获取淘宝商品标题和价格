@@ -1,0 +1,45 @@
+import requests
+import re
+
+#获取淘宝的搜索页首页
+def gethtml(url):
+    try:
+        r = requests.get(url,timeout=30)
+        r.raise_for_status()
+        r.encoding = r.apparent_encoding
+        return  r.text
+    except Exception as e:
+        return 'error:',e
+
+#解析获取的页面，提取需要的数据title和price
+def parserhtml(html,infolist):
+    try:
+        price_list = re.findall(r'"view_price":"[\d\.]*"',html)
+        title_list = re.findall(r'"raw_title":".*?"',html)
+        for i in range(len(price_list)):
+            price = eval(price_list[i].split(':')[1])
+            title = eval(title_list[i].split(':')[1])
+            infolist.append([title,price])
+    except Exception as e:
+        print('error:',e)
+
+#格式化显示结果
+def printlist(infolist):
+        formart_str = "{:2}\t{:8}\t{:10}"
+        print(formart_str.format('序号','标题','价格'))
+        count = 0
+        for i in infolist:
+            count = count + 1
+            print(formart_str.format(count,i[0],i[1]))
+
+
+if __name__ == '__main__':
+    match_str = '书包'
+    depth = 1
+    start_url = 'https://s.taobao.com/search?q='+match_str
+    infolist = []
+    for i in range(depth):
+        url = start_url+'&s='+str(44*i)
+        html = gethtml(url)
+        parserhtml(html,infolist)
+        printlist(infolist)
